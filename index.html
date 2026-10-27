@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>fx-991ES PLUS style Calculator - Lesson 1.9</title>
+<style>
+  :root{--bg:#f6f8fb;--ink:#1f2a44}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:"Segoe UI",system-ui,sans-serif;color:var(--ink)}
+  .wrap{display:flex;gap:28px;align-items:flex-start;padding:16px;flex-wrap:wrap;justify-content:center}
+  .help{max-width:300px;font-size:14px;line-height:1.5}
+  .help h1{font-size:20px;margin:0 0 6px}
+  .help kbd{background:#fff;border:1px solid #c9d2e0;border-radius:4px;padding:1px 6px;font-size:12px}
+  .calc{width:330px;border-radius:26px;padding:12px 12px 16px;background:linear-gradient(160deg,#3a3f48,#1a1d22);box-shadow:0 14px 30px rgba(0,0,0,.35),inset 0 0 0 2px #0b0c0e;user-select:none}
+  .brand{display:flex;justify-content:space-between;align-items:center;color:#f2f3f5;font-style:italic;font-weight:700;font-size:13px;margin:2px 4px 6px}
+  .brand small{display:block;font-weight:400;font-style:normal;font-size:8px;color:#a9b0bb;letter-spacing:.5px}
+  .solar{width:96px;height:14px;border-radius:4px;background:repeating-linear-gradient(90deg,#2b2320 0 15px,#6b5a4e 15px 16px);border:1px solid #0b0c0e}
+  .bezel{background:#15181c;border-radius:8px;padding:6px}
+  .lcd{background:#c9d4b9;border:1.5px solid #4a5441;border-radius:5px;height:104px;padding:6px 8px;font-family:Consolas,"Cascadia Mono",monospace;color:#1a221a;position:relative;overflow:hidden}
+  .ind{position:absolute;left:6px;top:3px;font-size:10px;font-weight:700}
+  #expr{height:62px;display:flex;align-items:center;white-space:nowrap;font-size:19px;transform-origin:left center}
+  #res{position:absolute;right:8px;bottom:6px;font-size:24px;font-weight:700;display:flex;align-items:center}
+  .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 2px}
+  .frac>.n{border-bottom:1.5px solid #1a221a;padding:0 3px 1px}
+  .frac>.d{padding:1px 3px 0}
+  .rad{display:inline-flex;align-items:stretch}
+  .rad>.sign{font-size:1.15em;margin-right:1px}
+  .rad>.in{border-top:1.5px solid #1a221a;padding:0 2px}
+  sup{font-size:.62em;line-height:0;position:relative;top:-.55em;vertical-align:baseline}
+  .idx{font-size:.55em;align-self:flex-start;margin-right:-2px}
+  .cur{animation:b 1s steps(1) infinite}@keyframes b{50%{opacity:0}}
+  .row{display:grid;gap:6px;margin-top:8px}
+  .top{grid-template-columns:1fr 1fr 64px 1fr 1fr;align-items:center;margin-top:10px}
+  .pad{width:60px;height:56px;border-radius:50%;background:#5a6069;position:relative;border:1.5px solid #0b0c0e}
+  .pad:after{content:"";position:absolute;left:18px;top:16px;width:24px;height:24px;border-radius:50%;background:#2d3138;border:1px solid #0b0c0e}
+  .pad b{position:absolute;color:#f5f5f5;font-size:10px;line-height:14px;width:16px;text-align:center}
+  .pad b.u{left:22px;top:2px}.pad b.dn{left:22px;bottom:2px}.pad b.l{left:3px;top:20px}.pad b.r{right:3px;top:20px;cursor:pointer}
+  button{font:inherit;cursor:pointer;border:1px solid #101215;border-radius:9px;color:#fff;background:#4b5059;box-shadow:0 2.5px 0 rgba(0,0,0,.55);padding:0;position:relative}
+  button:active{transform:translateY(2px);box-shadow:0 .5px 0 rgba(0,0,0,.55)}
+  button i{position:absolute;left:0;right:0;top:1px;text-align:center;font-style:normal;font-size:9px;color:#ffc400;font-weight:700}
+  .g6{grid-template-columns:repeat(6,1fr)}
+  .g5{grid-template-columns:repeat(5,1fr)}
+  .s{height:30px;font-size:12px;font-weight:700;padding-top:7px}
+  .s i{top:0}
+  .t{height:24px;font-size:11px;font-weight:700}
+  .n{height:42px;font-size:19px;font-weight:700;background:#e8ebef;color:#1f2328}
+  .o{background:#c9ced6;color:#1f2328}
+  .del{background:#e8833a;color:#fff}
+  .eq{background:#3d6fb5}
+  .shiftk{background:#f2c230;color:#1f2328}.alphak{background:#c0504d}.dk{background:#383d45}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="calc" id="calc">
+    <div class="brand"><div>fx-991ES PLUS<small>INSPIRE MATH &nbsp; NATURAL DISPLAY</small></div><div class="solar"></div></div>
+    <div class="bezel"><div class="lcd"><span class="ind" id="ind"></span><div id="expr"></div><div id="res"></div></div></div>
+    <div class="row top">
+      <div style="display:grid;gap:5px"><button class="t shiftk" data-k="SHIFT">SHIFT</button><button class="t dk">CALC</button></div>
+      <div style="display:grid;gap:5px"><button class="t alphak">ALPHA</button><button class="t dk">&#8747;dx</button></div>
+      <div class="pad"><b class="u">&#9650;</b><b class="dn">&#9660;</b><b class="l">&#9664;</b><b class="r" data-k="RIGHT">&#9654;</b></div>
+      <button class="t dk" style="height:24px">MODE</button>
+      <button class="t dk" data-k="AC" style="height:24px">ON</button>
+    </div>
+    <div class="row g6" id="r2"></div>
+    <div class="row g6" id="r3"></div>
+    <div class="row g6" id="r4"></div>
+    <div class="row g5" id="g"></div>
+  </div>
+  <div class="help">
+    <h1>Lesson 1.9 calculator</h1>
+    <p>A working copy of the classroom calculator: natural display, <b>SHIFT</b> for the yellow keys, <b>&#9654;</b> to leave a fraction, power or root box.</p>
+    <p><b>Keyboard:</b> <kbd>0-9</kbd> <kbd>.</kbd> <kbd>+</kbd> <kbd>-</kbd> <kbd>*</kbd> <kbd>/</kbd> <kbd>(</kbd> <kbd>)</kbd> <kbd>Enter</kbd> = &nbsp; <kbd>Backspace</kbd> DEL &nbsp; <kbd>Esc</kbd> AC &nbsp; <kbd>&rarr;</kbd> &#9654; &nbsp; <kbd>^</kbd> power &nbsp; <kbd>s</kbd> SHIFT</p>
+    <p>Examples: <b>&#9647;/&#9647;</b> 5 &#9654; 1.2 &minus; 0.761 &#9654; = &nbsp;&middot;&nbsp; <b>SHIFT &radic;</b> 27 = &nbsp;&middot;&nbsp; 2 &deg;&prime;&Prime; 25 &deg;&prime;&Prime; = then <b>S&hArr;D</b></p>
+  </div>
+</div>
+<script>
+"use strict";
+(function(){
+var tk=[],answered=false,ansVal=0,resVal=0,dispMode=0,errMsg="",shiftOn=false,resText="",hadDeg=false,ip=0;
+var U=String.fromCharCode;
+function isOpenerP(t){return ["(","sqrt(","cbrt(","]rt(","log(","ln(","sin(","cos(","tan(","asin(","acos(","atan("].indexOf(t)>=0}
+function stackStr(){var s="";for(var i=0;i<tk.length;i++){var t=tk[i];
+  if(isOpenerP(t)){ if(t==="]rt("&&s.length)s=s.slice(0,-1); s+="P"; }
+  else if(t==="^("||t==="E(")s+="E"; else if(t==="{")s+="N";
+  else if(t==="}/{"){s=s.slice(0,-1);s+="D"} else if(t==="}")s=s.slice(0,-1);
+  else if(t==="[")s+="I"; else if(t===")")s=s.slice(0,-1);}
+  return s}
+function closeE(){var s=stackStr();while(s.length&&s.slice(-1)==="E"){tk.push(")");s=s.slice(0,-1)}}
+function newLine(isOp){if(answered){tk=[];if(isOp)tk.push("ANS");answered=false;dispMode=0}}
+/* ---------- parser ---------- */
+function peek(){return ip<tk.length?tk[ip]:""}
+function fail(m){throw new Error(m)}
+function isDig(t){return /^[0-9]$/.test(t)||t==="."}
+function readNum(){var s="";while(isDig(peek())){s+=tk[ip];ip++}if(s===""||s===".")fail("Syntax ERROR");return parseFloat(s)}
+function startsFactor(t){if(!t||t==="]rt(")return false;return isDig(t)||isOpenerP(t)||t==="{"||t==="["||t==="ANS"||t==="PI"}
+function expect(t){if(peek()!==t)fail("Syntax ERROR");ip++}
+function pExpr(){var v=pTerm();for(;;){var t=peek();if(t==="+"){ip++;v+=pTerm()}else if(t==="-"){ip++;v-=pTerm()}else break}return v}
+function pTerm(){var v=pSigned();for(;;){var t=peek();
+  if(t==="*"){ip++;v*=pSigned()}
+  else if(t==="/"){ip++;var d=pSigned();if(d===0)fail("Math ERROR");v/=d}
+  else if(t==="E("){ip++;var e=pExpr();expect(")");v*=Math.pow(10,e)}
+  else if(startsFactor(t)){v*=pSigned()} else break}return v}
+function pSigned(){var t=peek();if(t==="-"){ip++;return -pSigned()}if(t==="+"){ip++;return pSigned()}return pPow()}
+function pPow(){var v=pPost();while(peek()==="^("){ip++;var e=pExpr();expect(")");if(v<0&&e!==Math.floor(e))fail("Math ERROR");if(v===0&&e<0)fail("Math ERROR");v=Math.pow(v,e)}return v}
+function pPost(){var v=pPrim();for(;;){var t=peek();if(t==="sq"){ip++;v=v*v}else if(t==="cu"){ip++;v=v*v*v}else if(t==="inv"){ip++;if(v===0)fail("Math ERROR");v=1/v}else break}return v}
+function cbrt(x){var r=Math.cbrt(x),q=Math.round(r);if(Math.abs(q*q*q-x)<1e-12*(1+Math.abs(x)))r=q;return r}
+function pPrim(){var t=peek();if(t==="")fail("Syntax ERROR");
+  if(isDig(t)){var num=readNum();
+    if(peek()==="DEG"){hadDeg=true;var total=0,dv=1;
+      for(;;){if(peek()==="DEG"){ip++;total+=num/dv;dv*=60;if(isDig(peek()))num=readNum();else break}else{total+=num/dv;break}}
+      return total}
+    return num}
+  ip++;var v,a;
+  switch(t){
+   case "(":v=pExpr();expect(")");return v;
+   case "{":v=pExpr();expect("}/{");a=pExpr();expect("}");if(a===0)fail("Math ERROR");return v/a;
+   case "sqrt(":v=pExpr();expect(")");if(v<0)fail("Math ERROR");return Math.sqrt(v);
+   case "cbrt(":v=pExpr();expect(")");return cbrt(v);
+   case "[":a=pExpr();expect("]rt(");v=pExpr();expect(")");if(a===0)fail("Math ERROR");
+     if(v<0){if(a===Math.floor(a)&&Math.abs(a%2)===1)return -Math.pow(-v,1/a);fail("Math ERROR")}
+     var r=Math.pow(v,1/a),q=Math.round(r);if(Math.abs(Math.pow(q,a)-v)<1e-12*(1+Math.abs(v)))r=q;return r;
+   case "log(":v=pExpr();expect(")");if(v<=0)fail("Math ERROR");return Math.log10(v);
+   case "ln(":v=pExpr();expect(")");if(v<=0)fail("Math ERROR");return Math.log(v);
+   case "sin(":case "cos(":case "tan(":v=pExpr();expect(")");a=v*Math.PI/180;var o;
+     if(t==="sin(")o=Math.sin(a);else if(t==="cos(")o=Math.cos(a);else{if(Math.abs(Math.cos(a))<1e-10)fail("Math ERROR");o=Math.sin(a)/Math.cos(a)}
+     return Math.abs(o)<1e-10?0:o;
+   case "asin(":case "acos(":case "atan(":v=pExpr();expect(")");
+     if(t==="atan(")return Math.atan(v)*180/Math.PI;if(Math.abs(v)>1)fail("Math ERROR");
+     return (t==="asin("?Math.asin(v):Math.acos(v))*180/Math.PI;
+   case "ANS":return ansVal;case "PI":return Math.PI;
+   default:fail("Syntax ERROR")}}
+/* ---------- formatting ---------- */
+function sig10(x){if(x===0)return "0";var e=Math.floor(Math.log10(Math.abs(x)));if(Math.abs(x)>=Math.pow(10,e+1))e++;if(Math.abs(x)<Math.pow(10,e))e--;
+  if(e>=10||e<-4){var m=x/Math.pow(10,e);m=Math.round(m*1e9)/1e9;if(Math.abs(m)>=10){m/=10;e++}return String(m)+U(215)+"10^"+e}
+  var k=Math.max(0,Math.min(13,9-e));var r=Math.round(x*Math.pow(10,k))/Math.pow(10,k);var s=r.toFixed(k);if(s.indexOf(".")>=0)s=s.replace(/0+$/,"").replace(/\.$/,"");return s}
+function fracText(x){for(var q=1;q<=1000;q++){var p=x*q;if(Math.abs(p-Math.round(p))<1e-9*(1+Math.abs(p))){return q===1?"":Math.round(p)+"/"+q}}return ""}
+function dmsText(x){var y=Math.abs(x),sg=x<0?"-":"",h=Math.floor(y),m=Math.floor((y-h)*60+1e-7),s=((y-h)*60-m)*60;
+  s=Math.abs(s-Math.round(s))<1e-6?Math.round(s):Math.round(s*100)/100;if(s>=60){s-=60;m++}if(m>=60){m-=60;h++}
+  return sg+h+U(176)+m+U(8242)+s+U(8243)}
+function showResult(){if(errMsg)resText=errMsg;else if(dispMode===2)resText=dmsText(resVal);else if(dispMode===1){resText=fracText(resVal);if(!resText)resText=sig10(resVal)}else resText=sig10(resVal)}
+function doEquals(){closeE();var s=stackStr();
+  while(s.length){var c=s.slice(-1);if(c==="P"||c==="E")tk.push(")");else if(c==="D")tk.push("}");else{errMsg="Syntax ERROR";showResult();answered=true;return}s=stackStr()}
+  if(!tk.length)return;ip=0;hadDeg=false;
+  try{resVal=pExpr();if(ip<tk.length)fail("Syntax ERROR");ansVal=resVal;answered=true;dispMode=hadDeg?2:0;errMsg="";showResult()}
+  catch(e){errMsg=(e.message==="Syntax ERROR")?"Syntax ERROR":"Math ERROR";answered=true;showResult()}}
+/* ---------- key entry ---------- */
+function press(k){
+  if(k==="AC"){tk=[];answered=false;errMsg="";shiftOn=false;dispMode=0;resText="";refresh();return}
+  if(errMsg){if(k==="DEL"){errMsg="";answered=false;refresh()}return}
+  if(k==="SHIFT"){shiftOn=!shiftOn;refresh();return}
+  var sh=shiftOn;shiftOn=false;var s,top;
+  if(k==="EQ"){if(!answered)doEquals();refresh();return}
+  if(k==="SD"){if(answered){if(dispMode===2)dispMode=0;else if(dispMode===0){if(fracText(resVal))dispMode=1}else dispMode=0;showResult()}refresh();return}
+  if(k==="DMS"){if(answered){dispMode=2;showResult()}else tk.push("DEG");refresh();return}
+  if(k==="DEL"){if(answered){answered=false;dispMode=0}else if(tk.length)tk.pop();refresh();return}
+  if(k==="RIGHT"){if(!answered){closeE();s=stackStr();if(s.length){top=s.slice(-1);if(top==="N")tk.push("}/{");else if(top==="D")tk.push("}");else if(top==="I")tk.push("]rt(")}}refresh();return}
+  if(k==="+"||k==="-"||k==="*"||k==="/"){newLine(true);top=stackStr().slice(-1);
+    if(top==="E"&&tk.length&&(tk[tk.length-1]==="^("||tk[tk.length-1]==="E(")&&k==="-"){tk.push("-");refresh();return}
+    closeE();tk.push(k);refresh();return}
+  if(k==="SQ"||k==="INV"||k==="POW"||k==="EXP"){newLine(true);
+    if(k==="SQ")tk.push(sh?"cu":"sq");else if(k==="INV")tk.push("inv");else if(k==="POW")tk.push(sh?"[":"^(");else tk.push(sh?"PI":"E(");refresh();return}
+  newLine(false);
+  if(/^[0-9.]$/.test(k))tk.push(k);
+  else switch(k){
+   case "(":tk.push("(");break;
+   case ")":closeE();s=stackStr();if(s.length&&s.slice(-1)==="P")tk.push(")");break;
+   case "NEG":tk.push("-");break;
+   case "SQRT":tk.push(sh?"cbrt(":"sqrt(");break;
+   case "FRAC":tk.push("{");break;
+   case "ANS":tk.push("ANS");break;
+   case "LOG":tk.push("log(");break;case "LN":tk.push("ln(");break;
+   case "SIN":tk.push(sh?"asin(":"sin(");break;case "COS":tk.push(sh?"acos(":"cos(");break;case "TAN":tk.push(sh?"atan(":"tan(");break}
+  refresh()}
+/* ---------- natural display ---------- */
+var li=0;
+function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;return e}
+function plain(t,st){var c=t;
+  if(t==="*")c=U(215);else if(t==="/")c=U(247);else if(t==="-")c=U(8722);else if(t==="ANS")c="Ans";else if(t==="PI")c=U(960);
+  else if(t==="DEG"){st.d++;c=st.d===1?U(176):st.d===2?U(8242):U(8243);return c}
+  else if(t==="asin(")c="sin"+U(8315)+U(185)+"(";else if(t==="acos(")c="cos"+U(8315)+U(185)+"(";else if(t==="atan(")c="tan"+U(8315)+U(185)+"(";
+  if(!(/^[0-9]$/.test(t))&&t!==".")st.d=0;return c}
+function seq(stop){var box=el("span");box.style.display="inline-flex";box.style.alignItems="center";var run="",depth=0,st={d:0};
+  function flush(){if(run){box.appendChild(el("span","",run));run=""}}
+  while(li<tk.length){var t=tk[li];
+    if(stop&&t===stop&&depth===0){li++;break}
+    if(t==="{"){flush();st.d=0;li++;var f=el("span","frac");var n=el("span","n");n.appendChild(seq("}/{"));var d=el("span","d");d.appendChild(seq("}"));f.appendChild(n);f.appendChild(d);box.appendChild(f)}
+    else if(t==="sqrt("||t==="cbrt("){flush();st.d=0;li++;var r=el("span","rad");if(t==="cbrt(")r.appendChild(el("span","idx","3"));r.appendChild(el("span","sign",U(8730)));var inn=el("span","in");inn.appendChild(seq(")"));r.appendChild(inn);box.appendChild(r)}
+    else if(t==="["){flush();st.d=0;li++;var r2=el("span","rad");var ix=el("span","idx");ix.appendChild(seq("]rt("));r2.appendChild(ix);r2.appendChild(el("span","sign",U(8730)));var in2=el("span","in");in2.appendChild(seq(")"));r2.appendChild(in2);box.appendChild(r2)}
+    else if(t==="^("||t==="E("){flush();st.d=0;li++;if(t==="E(")box.appendChild(el("span","",U(215)+"10"));var sp=el("sup");sp.appendChild(seq(")"));box.appendChild(sp)}
+    else if(t==="sq"||t==="cu"||t==="inv"){flush();st.d=0;li++;box.appendChild(el("sup","",t==="sq"?"2":t==="cu"?"3":U(8722)+"1"))}
+    else if(isOpenerP(t)&&t!=="]rt("){run+=plain(t,st);depth++;li++}
+    else if(t===")"){run+=")";if(depth>0)depth--;li++}
+    else if(t==="}/{"||t==="}"||t==="]rt("){li++}
+    else if(t==="_"){flush();box.appendChild(el("span","cur","_"));li++}
+    else{run+=plain(t,st);li++}}
+  flush();return box}
+function refresh(){
+  var ex=document.getElementById("expr");ex.textContent="";
+  var tmp=tk.slice();if(!answered&&!errMsg)tk.push("_");
+  li=0;ex.appendChild(seq(""));tk=tmp;
+  ex.style.transform="none";var avail=document.querySelector(".lcd").clientWidth-18;
+  if(ex.scrollWidth>avail){ex.style.transform="scale("+(avail/ex.scrollWidth)+")"}
+  var rs=document.getElementById("res");rs.textContent="";
+  var txt=(answered||errMsg)?resText:"";
+  if(dispMode===1&&!errMsg&&answered&&txt.indexOf("/")>0){var p=txt.split("/");var f=el("span","frac");f.appendChild(el("span","n",p[0]));f.appendChild(el("span","d",p[1]));rs.appendChild(f)}
+  else rs.textContent=txt;
+  document.getElementById("ind").textContent=shiftOn?"S":""}
+/* ---------- build keys ---------- */
+function key(parent,label,k,cls,leg){var b=document.createElement("button");b.className=cls;if(leg){var i=document.createElement("i");i.textContent=leg;b.appendChild(i)}b.appendChild(document.createTextNode(label));if(k)b.setAttribute("data-k",k);parent.appendChild(b)}
+var sup2=U(178),sup3=U(179),sm1=U(8315)+U(185);
+var R2=[["x"+sm1,"INV",""],["[ ] / [ ]","FRAC",""],[U(8730),"SQRT",U(8731)],["x"+sup2,"SQ","x"+sup3],["x"+U(9643),"POW",U(739)+U(8730)],["log","LOG",""]];
+var R3=[["ln","LN",""],["("+U(8722)+")","NEG",""],[U(176)+U(8242)+U(8243),"DMS",""],["sin","SIN","sin"+sm1],["cos","COS","cos"+sm1],["tan","TAN","tan"+sm1]];
+var R4=[["RCL","",""],["ENG","",""],["(","(",""],[")",")",""],["S"+U(8660)+"D","SD",""],["M+","",""]];
+[["r2",R2],["r3",R3],["r4",R4]].forEach(function(p){var r=document.getElementById(p[0]);p[1].forEach(function(x){key(r,x[0],x[1],"s",x[2])})});
+var G=[[["7","7","n"],["8","8","n"],["9","9","n"],["DEL","DEL","n del"],["AC","AC","n del"]],
+ [["4","4","n"],["5","5","n"],["6","6","n"],[U(215),"*","n o"],[U(247),"/","n o"]],
+ [["1","1","n"],["2","2","n"],["3","3","n"],["+","+","n o"],[U(8722),"-","n o"]],
+ [["0","0","n"],[".",".","n"],[U(215)+"10"+U(739),"EXP","n o",U(960)],["Ans","ANS","n o"],["=","EQ","n eq"]]];
+var gr=document.getElementById("g");G.forEach(function(row){row.forEach(function(x){key(gr,x[0],x[1],x[2],x[3]||"")})});
+document.getElementById("calc").addEventListener("click",function(e){var b=e.target.closest("[data-k]");if(b)press(b.getAttribute("data-k"))});
+document.addEventListener("keydown",function(e){var k=e.key,m=null;
+  if(/^[0-9.]$/.test(k))m=k;else if(k==="+"||k==="-"||k==="*"||k==="/")m=k;else if(k==="("||k===")")m=k;
+  else if(k==="Enter"||k==="=")m="EQ";else if(k==="Backspace")m="DEL";else if(k==="Escape")m="AC";else if(k==="ArrowRight")m="RIGHT";
+  else if(k==="^")m="POW";else if(k==="s"||k==="S")m="SHIFT";else if(k==="r")m="SQRT";else if(k==="a")m="ANS";
+  if(m){e.preventDefault();press(m)}});
+/* test hooks */
+function runKeys(seq){press("AC");seq.split(/\s+/).forEach(function(w){if(!w)return;if(/^[0-9.]+$/.test(w)&&w.length>1){w.split("").forEach(press)}else press(w)});
+  return {expr:document.getElementById("expr").textContent,res:resText,val:resVal,html:document.getElementById("expr").innerHTML}}
+window.CalcTest={runKeys:runKeys,sig10:sig10,press:press};
+refresh();
+})();
+</script>
+</body>
+</html>
